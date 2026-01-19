@@ -1,0 +1,22 @@
+services:
+  ros-master:
+    build: ./ros
+    container_name: ros-master
+    ports:
+      - "9090:9090"
+    environment:
+      - TURTLEBOT3_MODEL=burger
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    command: >
+      bash -c "ros2 launch rosbridge_server rosbridge_websocket_launch.xml & 
+               ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py"
+
+  web-ui:
+    build: ./frontend
+    container_name: web-ui
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      - ros-master
