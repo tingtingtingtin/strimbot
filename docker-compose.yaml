@@ -4,12 +4,23 @@ services:
     container_name: ros-master
     ports:
       - "9090:9090"
+      - "8765:8765"
     environment:
       - TURTLEBOT3_MODEL=burger
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - GAZEBO_PLUGIN_PATH=/opt/ros/humble/lib
+      - DISPLAY=:99
+    volumes:
+      - ./ros/sim_launch.py:/sim_launch.py
     command: >
-      bash -c "ros2 launch rosbridge_server rosbridge_websocket_launch.xml & 
-               ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py"
+      bash -c "
+        source /opt/ros/humble/setup.bash &&
+        export GAZEBO_MODEL_PATH=/opt/ros/humble/share/turtlebot3_gazebo/models &&
+        ros2 launch /sim_launch.py &
+        sleep 15 &&
+        ros2 launch rosbridge_server rosbridge_websocket_launch.xml &
+        ros2 launch foxglove_bridge foxglove_bridge_launch.xml
+      "
 
   web-ui:
     build: ./frontend
