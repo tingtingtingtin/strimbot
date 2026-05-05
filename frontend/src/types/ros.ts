@@ -1,0 +1,25 @@
+export interface Position {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface Quaternion {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+}
+
+export interface RobotState {
+  position: Position;
+  orientation: Quaternion;
+  theta: number; // derived yaw in radians
+  linearVel: number;
+  angularVel: number;
+}
+
+export interface TrailPoint {
+  x: number;
+  y: number;
+}
