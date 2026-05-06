@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import * as ROSLIB from 'roslib';
-import type { RobotState, TrailPoint } from '../types/ros';
+import type { RobotState, TrailPoint, OdometryMessage } from '../types/ros';
 
 const MAX_TRAIL = 600;
 
@@ -19,21 +19,6 @@ const DEFAULT_STATE: RobotState = {
   linearVel: 0,
   angularVel: 0,
 };
-
-interface OdometryMessage {
-  pose: {
-    pose: {
-      position: { x: number; y: number; z: number };
-      orientation: { x: number; y: number; z: number; w: number };
-    };
-  };
-  twist: {
-    twist: {
-      linear: { x: number; y: number; z: number };
-      angular: { x: number; y: number; z: number };
-    };
-  };
-}
 
 export function useOdometry(ros: ROSLIB.Ros | null) {
   const [robotState, setRobotState] = useState<RobotState>(DEFAULT_STATE);

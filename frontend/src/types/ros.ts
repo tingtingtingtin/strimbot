@@ -23,3 +23,18 @@ export interface TrailPoint {
   x: number;
   y: number;
 }
+
+export interface OdometryMessage {
+  pose: {
+    pose: {
+      position: { x: number; y: number; z: number };
+      orientation: { x: number; y: number; z: number; w: number };
+    };
+  };
+  twist: {
+    twist: {
+      linear: { x: number; y: number; z: number };
+      angular: { x: number; y: number; z: number };
+    };
+  };
+}
