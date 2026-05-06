@@ -2,15 +2,17 @@ import { Canvas } from '@react-three/fiber';
 import { Grid, OrbitControls } from '@react-three/drei';
 import { RobotMesh } from './RobotMesh';
 import { RobotTrail } from './RobotTrail';
+import { LidarPoints } from './LidarPoints';
 import type { RobotState, TrailPoint } from '../../types/ros';
 
 interface SceneProps {
   robotState: RobotState;
   trail: TrailPoint[];
   showTrail: boolean;
+  lidarPoints: React.RefObject<[number, number][]>;
 }
 
-export function Scene({ robotState, trail, showTrail }: SceneProps) {
+export function Scene({ robotState, trail, showTrail, lidarPoints }: SceneProps) {
   return (
     <Canvas
       orthographic
@@ -18,7 +20,6 @@ export function Scene({ robotState, trail, showTrail }: SceneProps) {
       style={{ background: '#080c18' }}
     >
       <ambientLight intensity={1} />
-
       <Grid
         args={[100, 100]}
         cellSize={1}
@@ -31,10 +32,9 @@ export function Scene({ robotState, trail, showTrail }: SceneProps) {
         fadeStrength={1}
         infiniteGrid
       />
-
       {showTrail && <RobotTrail trail={trail} />}
+      <LidarPoints points={lidarPoints} />
       <RobotMesh robotState={robotState} />
-
       <OrbitControls
         makeDefault
         enableRotate={false}

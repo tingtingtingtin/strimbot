@@ -5,7 +5,6 @@ import type { RobotState, TrailPoint, OdometryMessage } from '../types/ros';
 const MAX_TRAIL = 600;
 
 function quatToYaw(q: { x: number; y: number; z: number; w: number }): number {
-  // Extract yaw (rotation around Z) from quaternion
   return Math.atan2(
     2 * (q.w * q.z + q.x * q.y),
     1 - 2 * (q.y * q.y + q.z * q.z)
@@ -22,6 +21,7 @@ const DEFAULT_STATE: RobotState = {
 
 export function useOdometry(ros: ROSLIB.Ros | null) {
   const [robotState, setRobotState] = useState<RobotState>(DEFAULT_STATE);
+  const robotStateRef = useRef<RobotState>(DEFAULT_STATE);
   const trailRef = useRef<TrailPoint[]>([]);
   const [trail, setTrail] = useState<TrailPoint[]>([]);
 
@@ -35,7 +35,7 @@ export function useOdometry(ros: ROSLIB.Ros | null) {
       throttle_rate: 50,
     });
 
-    odom.subscribe((message) => {
+    odom.subscribe((message: unknown) => {
       const msg = message as OdometryMessage;
       const pos = msg.pose.pose.position;
       const ori = msg.pose.pose.orientation;
@@ -43,15 +43,17 @@ export function useOdometry(ros: ROSLIB.Ros | null) {
       const linearVel = msg.twist.twist.linear.x;
       const angularVel = msg.twist.twist.angular.z;
 
-      setRobotState({
+      const state: RobotState = {
         position: { x: pos.x, y: pos.y, z: pos.z },
         orientation: ori,
         theta,
         linearVel,
         angularVel,
-      });
+      };
 
-      // Update trail
+      robotStateRef.current = state;
+      setRobotState(state);
+
       trailRef.current = [
         ...trailRef.current.slice(-MAX_TRAIL),
         { x: pos.x, y: pos.y },
@@ -67,5 +69,5 @@ export function useOdometry(ros: ROSLIB.Ros | null) {
     setTrail([]);
   };
 
-  return { robotState, trail, clearTrail };
+  return { robotState, robotStateRef, trail, clearTrail };
 }
